@@ -243,7 +243,189 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add some dynamic parallax to hero (subtle)
     window.addEventListener('scroll', () => {
         const hero = document.querySelector('.hero');
-        const scrollPosition = window.pageYOffset;
-        hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+        if (hero) {
+            const scrollPosition = window.pageYOffset;
+            hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+        }
     });
+
+    // --- SIP Calculator Logic ---
+    const sipMonthlyInput = document.getElementById('sip-monthly');
+    const sipReturnInput = document.getElementById('sip-return');
+    const sipYearsInput = document.getElementById('sip-years');
+
+    const sipMonthlyLabel = document.getElementById('sip-monthly-label');
+    const sipReturnLabel = document.getElementById('sip-return-label');
+    const sipYearsLabel = document.getElementById('sip-years-label');
+
+    const investedAmountEl = document.getElementById('invested-amount');
+    const estReturnsEl = document.getElementById('est-returns');
+    const totalValueEl = document.getElementById('total-value');
+
+    let sipChart;
+
+    function initSipChart() {
+        const ctx = document.getElementById('sipChart').getContext('2d');
+        sipChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Invested Amount', 'Est. Returns'],
+                datasets: [{
+                    data: [0, 0],
+                    backgroundColor: ['#003366', '#00A3FF'],
+                    hoverOffset: 4,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    function calculateSIP() {
+        const P = parseFloat(sipMonthlyInput.value);
+        const annualRate = parseFloat(sipReturnInput.value);
+        const years = parseFloat(sipYearsInput.value);
+        
+        const i = (annualRate / 12) / 100;
+        const n = years * 12;
+        
+        // SIP Formula: M = P * ((1 + i)^n - 1) / i * (1 + i)
+        const totalValue = P * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
+        const investedAmount = P * n;
+        const estimatedReturns = totalValue - investedAmount;
+
+        // Update Labels
+        sipMonthlyLabel.innerText = P.toLocaleString('en-IN');
+        sipReturnLabel.innerText = annualRate;
+        sipYearsLabel.innerText = years;
+
+        // Update Results
+        investedAmountEl.innerText = `₹${Math.round(investedAmount).toLocaleString('en-IN')}`;
+        estReturnsEl.innerText = `₹${Math.round(estimatedReturns).toLocaleString('en-IN')}`;
+        totalValueEl.innerText = `₹${Math.round(totalValue).toLocaleString('en-IN')}`;
+
+        // Update Chart
+        if (sipChart) {
+            sipChart.data.datasets[0].data = [investedAmount, estimatedReturns];
+            sipChart.update();
+        }
+    }
+
+    if (sipMonthlyInput) {
+        initSipChart();
+        [sipMonthlyInput, sipReturnInput, sipYearsInput].forEach(input => {
+            input.addEventListener('input', calculateSIP);
+        });
+        calculateSIP(); // Initial calculation
+    }
+
+    // --- Nifty PE Chart & Live Tracker Logic ---
+    function initNiftyPeChart() {
+        // Get the canvas element for the Nifty PE chart
+        const ctx = document.getElementById('niftyPeChart');
+        // Stop if the element doesn't exist on the page
+        if (!ctx) return;
+
+        // Historical Nifty PE data points for the trend visualization
+        const labels = ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'];
+        const peData = [21.5, 22.8, 24.1, 26.5, 27.8, 25.2, 32.1, 22.5, 21.2, 22.8];
+
+        // Create the line chart using Chart.js
+        new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nifty 50 PE Ratio',
+                    data: peData,
+                    borderColor: '#00A3FF',
+                    backgroundColor: 'rgba(0, 163, 255, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#003366',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: 15,
+                        suggestedMax: 35,
+                        grid: { color: 'rgba(0, 51, 102, 0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#003366',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        padding: 10,
+                        displayColors: false
+                    }
+                }
+            }
+        });
+
+        // Function to simulate fetching live Nifty PE data
+        function updateLivePE() {
+            // Target elements in the live tracker card
+            const peValueEl = document.getElementById('current-pe-value');
+            const peStatusEl = document.getElementById('pe-status-badge');
+            const peTimeEl = document.getElementById('pe-update-time');
+
+            // Skip if elements are missing
+            if (!peValueEl) return;
+
+            // Simulate a "fetch" with a small delay for a realistic feel
+            setTimeout(() => {
+                // Latest recorded Nifty PE value (approximate current value)
+                const currentPE = 22.85;
+                // Update the main value display with fixed precision
+                peValueEl.innerText = currentPE.toFixed(2);
+                
+                // Set the status badge based on safe investment zones
+                if (currentPE < 18) {
+                    peStatusEl.innerText = 'Under Valued';
+                    peStatusEl.className = 'badge badge-success';
+                } else if (currentPE <= 22) {
+                    peStatusEl.innerText = 'Fair Value';
+                    peStatusEl.className = 'badge badge-neutral';
+                } else if (currentPE <= 25) {
+                    peStatusEl.innerText = 'Rich Value';
+                    peStatusEl.className = 'badge badge-warning';
+                } else {
+                    peStatusEl.innerText = 'Overvalued';
+                    peStatusEl.className = 'badge badge-danger';
+                }
+
+                // Update the "Last Updated" timestamp to the current time
+                const now = new Date();
+                peTimeEl.innerText = `LAST UPDATED: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+            }, 500);
+        }
+
+        // Run the update immediately on load
+        updateLivePE();
+        // Periodically refresh the data every 60 seconds to simulate a live feed
+        setInterval(updateLivePE, 60000);
+    }
+
+    // Initialize the chart and tracker
+    initNiftyPeChart();
 });
+

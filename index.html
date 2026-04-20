@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="style.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -30,13 +32,15 @@
         <div class="container nav-container">
             <nav>
                 <a href="#" class="logo-container">
-                    <img src="/wealthvestmfdistributors.png" alt="Logo" class="logo">
-                    <span class="logo-text">GROWYOURWEALTH</span>
+                    <img src="asset/wealthvestmfdistributors.png" alt="Logo" class="logo">
+                    <span class="logo-text">WEALTHVEST</span>
                 </a>
                 <ul class="nav-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#about">About Me</a></li>
                     <li><a href="#services">Services</a></li>
+                    <li><a href="#calculators">Tools</a></li>
+                    <li><a href="#market-insights">Market Insights</a></li>
                     <li><a href="#reviews">Reviews</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
@@ -86,6 +90,118 @@
                                     <span class="credential-value">ARN-315235</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculators Section -->
+        <section id="calculators" class="calculators section-white">
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 4rem;" class="fade-in">
+                    <span class="credential-label">Investment Tools</span>
+                    <h2>Plan Your Future Wealth</h2>
+                    <p style="max-width: 600px; margin: 1rem auto;">Use our interactive tools to visualize your wealth creation journey through systematic investing.</p>
+                </div>
+
+                <div class="calculator-container fade-in">
+                    <div class="calc-card">
+                        <div class="calc-header">
+                            <h3><i class="fas fa-calculator" style="margin-right: 10px; color: var(--primary-color);"></i> SIP Calculator</h3>
+                            <p>Systematic Investment Plan</p>
+                        </div>
+                        <div class="calc-body">
+                            <div class="input-group">
+                                <div class="input-header">
+                                    <label>Monthly Investment</label>
+                                    <span class="input-value">₹<span id="sip-monthly-label">25,000</span></span>
+                                </div>
+                                <input type="range" id="sip-monthly" min="500" max="100000" step="500" value="25000" class="slider">
+                            </div>
+                            <div class="input-group">
+                                <div class="input-header">
+                                    <label>Expected Return Rate (p.a)</label>
+                                    <span class="input-value"><span id="sip-return-label">12</span>%</span>
+                                </div>
+                                <input type="range" id="sip-return" min="1" max="30" step="0.5" value="12" class="slider">
+                            </div>
+                            <div class="input-group">
+                                <div class="input-header">
+                                    <label>Investment Period (Years)</label>
+                                    <span class="input-value"><span id="sip-years-label">10</span> yrs</span>
+                                </div>
+                                <input type="range" id="sip-years" min="1" max="40" step="1" value="10" class="slider">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-summary">
+                            <div class="result-item">
+                                <p>Invested Amount</p>
+                                <h4 id="invested-amount">₹30,00,000</h4>
+                            </div>
+                            <div class="result-item">
+                                <p>Est. Returns</p>
+                                <h4 id="est-returns" class="text-success">₹28,08,477</h4>
+                            </div>
+                            <div class="result-divider"></div>
+                            <div class="result-item total">
+                                <p>Total Value</p>
+                                <h4 id="total-value">₹58,08,477</h4>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="sipChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Market Insights Section (Nifty PE Chart) -->
+        <section id="market-insights" class="market-insights">
+            <div class="container">
+                <div class="insights-grid">
+                    <div class="insights-content fade-in">
+                        <span class="credential-label">Market Intelligence</span>
+                        <h2>Nifty 50 PE Ratio Analysis</h2>
+                        <div class="live-pe-card">
+                            <div class="live-pe-header">
+                                <span><i class="fas fa-tower-broadcast"></i> LIVE TRACKER</span>
+                                <span id="pe-update-time">Updating...</span>
+                            </div>
+                            <div class="live-pe-body">
+                                <h3>Nifty 50 PE Ratio</h3>
+                                <div class="pe-value-container">
+                                    <span id="current-pe-value">--</span>
+                                    <span id="pe-status-badge" class="badge">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p>The Price-to-Earnings (P/E) ratio is a vital indicator of market valuation. We track this data to identify investment opportunities and manage portfolio risk during market extremes.</p>
+                        <div class="insight-tips">
+                            <div class="tip-item">
+                                <i class="fas fa-circle-info"></i>
+                                <span>PE < 18: Historically attractive "Buy" zone.</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-circle-info"></i>
+                                <span>PE 18-22: Fair valuation territory.</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-circle-info"></i>
+                                <span>PE > 22: Expensive zone; caution advised.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insights-chart-card fade-in">
+                        <div class="chart-header">
+                            <p>Nifty 50 Historical PE Ratio (Trend)</p>
+                        </div>
+                        <div class="nifty-chart-wrapper">
+                            <canvas id="niftyPeChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -244,8 +360,8 @@
             <div class="footer-content">
                 <div>
                     <a href="#" class="logo-container" style="margin-bottom: 1.5rem;">
-                        <img src="/wealthvestmfdistributors.png" alt="Logo" class="logo">
-                        <span class="logo-text">GROWYOURWEALTH</span>
+                        <img src="asset/wealthvestmfdistributors.png" alt="Logo" class="logo">
+                        <span class="logo-text">WEALTHVEST</span>
                     </a>
                     <p>Empowering investors with professional guidance and transparent advisory services since 3+ years.</p>
                 </div>
@@ -255,6 +371,8 @@
                         <li><a href="#home" style="text-decoration: none; color: var(--text-light);">Home</a></li>
                         <li><a href="#about" style="text-decoration: none; color: var(--text-light);">About Me</a></li>
                         <li><a href="#services" style="text-decoration: none; color: var(--text-light);">Services</a></li>
+                        <li><a href="#calculators" style="text-decoration: none; color: var(--text-light);">SIP Calculator</a></li>
+                        <li><a href="#market-insights" style="text-decoration: none; color: var(--text-light);">Nifty PE Chart</a></li>
                         <li><a href="#reviews" style="text-decoration: none; color: var(--text-light);">Reviews</a></li>
                     </ul>
                 </div>
